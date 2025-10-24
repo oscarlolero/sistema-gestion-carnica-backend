@@ -34,8 +34,8 @@ model Category {
 model ProductCategory {
   productId  Int
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-  product    Product  @relation(fields: [productId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([productId, categoryId])
 }
@@ -62,8 +62,8 @@ model ProductCut {
   cutId        Int
   pricePerKg   Decimal? @db.Decimal(10, 2)
   pricePerUnit Decimal? @db.Decimal(10, 2)
-  cut          Cut      @relation(fields: [cutId], references: [id])
-  product      Product  @relation(fields: [productId], references: [id])
+  cut          Cut      @relation(fields: [cutId], references: [id], onDelete: Cascade)
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Ticket {

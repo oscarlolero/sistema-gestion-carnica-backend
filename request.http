@@ -1,2 +1,29 @@
 ### test
-GET http://localhost:3000/users
+GET http://localhost:3000/products
+
+### create product
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+  "name": "Product 1",
+  "description": "Description 1",
+  "barcode": "12345678901238",
+  "pricePerKg": 100.0,
+  "pricePerUnit": 100.0,
+  "baseUnitId": 1
+}
+
+### get product by id
+GET http://localhost:3000/products/1
+
+### update product
+PATCH http://localhost:3000/products/1
+Content-Type: application/json
+
+{
+  "name": "beef 3"
+}
+
+### delete product
+DELETE http://localhost:3000/products/2
