@@ -1,14 +1,13 @@
-// @ts-check
-import eslint from '@eslint/js';
-import { defineConfig } from 'eslint/config';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+// eslint.config.js (backend)
+import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import { defineConfig } from 'eslint/config';
 
-export default defineConfig(
+export default defineConfig([
   {
     ignores: [
-      'eslint.config.mjs',
       'node_modules',
       'dist',
       'coverage',
@@ -18,23 +17,25 @@ export default defineConfig(
       '**/*.test.ts',
     ],
   },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  eslintPluginPrettierRecommended,
   {
+    files: ['**/*.{ts,js}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+      prettierRecommended,
+    ],
     languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'commonjs',
       globals: {
         ...globals.node,
         ...globals.jest,
       },
-      sourceType: 'commonjs',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
@@ -42,4 +43,4 @@ export default defineConfig(
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
-);
+]);
