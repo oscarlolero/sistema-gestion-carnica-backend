@@ -1,0 +1,117 @@
+---
+alwaysApply: false
+---
+
+# NestJS Products Module Coding Rules
+
+## 1. Import Structure
+
+Order of imports:
+
+1. NestJS core imports
+2. Prisma/TypeORM imports
+3. Local DTOs
+4. Local services
+
+## 2. Naming Conventions
+
+- Services: {Entity}Service (e.g., ProductsService)
+- Controllers: {Entity}Controller (e.g., ProductsController)
+- Modules: {Entity}Module (e.g., ProductsModule)
+- DTOs: {Action}{Entity}Dto (e.g., CreateProductDto, UpdateProductDto)
+- Schemas: {action}{Entity}Schema (e.g., createProductSchema)
+
+## 3. Service Structure
+
+@Injectable()
+export class {Entity}Service {
+constructor(private readonly prisma: PrismaService) {}
+
+// Public CRUD methods in this order:
+// 1. create
+// 2. findAll  
+ // 3. findOne
+// 4. update
+// 5. remove
+
+// Private methods at the end:
+// 1. ensureExists
+// 2. mapCreateData
+// 3. mapUpdateData
+// 4. mapDecimalInput (if applicable)
+}
+
+## 4. Controller Structure
+
+@Controller('{entity}')
+export class {Entity}Controller {
+constructor(private readonly {entity}Service: {Entity}Service) {}
+
+// Methods in this order:
+// 1. @Post() create
+// 2. @Get() findAll
+// 3. @Get(':id') findOne
+// 4. @Patch(':id') update
+// 5. @Delete(':id') remove
+}
+
+## 5. Error Handling
+
+- Use NotFoundException for not found resources
+- Descriptive error messages: "Product with id ${id} not found"
+- Check existence before update/delete operations
+
+## 6. DTOs with Zod
+
+Create reusable schemas
+const nonNegativeNumber = z.number().nonnegative();
+
+Main schema
+export const create{Entity}Schema = z.object({
+// required fields first
+// optional fields after
+});
+
+DTO class
+export class Create{Entity}Dto extends createZodDto(create{Entity}Schema) {}
+
+Update DTO reuses main schema
+export const update{Entity}Schema = create{Entity}Schema.partial();
+export class Update{Entity}Dto extends createZodDto(update{Entity}Schema) {}
+
+## 7. Data Mapping
+
+- Create private methods mapCreateData and mapUpdateData
+- Handle optional fields with !== undefined
+- Use ?? null to convert undefined to null when needed
+- Create mapDecimalInput method for Prisma decimals
+
+## 8. Parameter Validation
+
+- Use ParseIntPipe for numeric IDs
+- Validate resource existence before destructive operations
+
+## 9. Module Structure
+
+@Module({
+imports: [PrismaModule], // or required modules
+controllers: [{Entity}Controller],
+providers: [{Entity}Service],
+})
+export class {Entity}Module {}
+
+## 10. Ordering and Queries
+
+- Use orderBy: { createdAt: 'desc' } for listings
+- Keep queries simple and readable
+
+## 11. Types and Returns
+
+- Use explicit types: Promise<Product>, Promise<Product[]>
+- Use Prisma types: Prisma.ProductUncheckedCreateInput
+
+## 12. Private Methods
+
+- Group by functionality
+- Descriptive names that indicate purpose
+- Keep methods small and focused

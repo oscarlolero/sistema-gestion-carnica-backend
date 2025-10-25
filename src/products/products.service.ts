@@ -10,7 +10,25 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     return this.prisma.product.create({
-      data: this.mapCreateData(createProductDto),
+      data: {
+        ...this.mapCreateData(createProductDto),
+        categories: createProductDto.categories
+          ? {
+              create: createProductDto.categories.map((cat) => ({
+                categoryId: cat.categoryId,
+              })),
+            }
+          : undefined,
+        cuts: createProductDto.cuts
+          ? {
+              create: createProductDto.cuts.map((cut) => ({
+                cutId: cut.cutId,
+                pricePerKg: this.mapDecimalInput(cut.pricePerKg),
+                pricePerUnit: this.mapDecimalInput(cut.pricePerUnit),
+              })),
+            }
+          : undefined,
+      },
     });
   }
 
@@ -20,9 +38,53 @@ export class ProductsService {
     });
   }
 
+  async findActive(include?: string): Promise<Product[]> {
+    const includeOptions: Prisma.ProductInclude = {};
+
+    if (include) {
+      const includeArray = include.split(',').map((item) => item.trim());
+
+      if (includeArray.includes('categories')) {
+        includeOptions.categories = {
+          include: {
+            category: true,
+          },
+        };
+      }
+
+      if (includeArray.includes('cuts')) {
+        includeOptions.cuts = {
+          include: {
+            cut: true,
+          },
+        };
+      }
+    }
+
+    return this.prisma.product.findMany({
+      where: {
+        isActive: true,
+      },
+      include: includeOptions,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findOne(id: number): Promise<Product> {
     const product = await this.prisma.product.findUnique({
       where: { id },
+      include: {
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+        cuts: {
+          include: {
+            cut: true,
+          },
+        },
+      },
     });
 
     if (!product) {
@@ -40,7 +102,27 @@ export class ProductsService {
 
     return this.prisma.product.update({
       where: { id },
-      data: this.mapUpdateData(updateProductDto),
+      data: {
+        ...this.mapUpdateData(updateProductDto),
+        categories: updateProductDto.categories
+          ? {
+              deleteMany: {},
+              create: updateProductDto.categories.map((cat) => ({
+                categoryId: cat.categoryId,
+              })),
+            }
+          : undefined,
+        cuts: updateProductDto.cuts
+          ? {
+              deleteMany: {},
+              create: updateProductDto.cuts.map((cut) => ({
+                cutId: cut.cutId,
+                pricePerKg: this.mapDecimalInput(cut.pricePerKg),
+                pricePerUnit: this.mapDecimalInput(cut.pricePerUnit),
+              })),
+            }
+          : undefined,
+      },
     });
   }
 

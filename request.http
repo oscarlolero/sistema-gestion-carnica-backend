@@ -6,16 +6,34 @@ POST http://localhost:3000/products
 Content-Type: application/json
 
 {
-  "name": "Product 1",
+  "name": "Lomito super",
   "description": "Description 1",
-  "barcode": "12345678901238",
-  "pricePerKg": 100.0,
-  "pricePerUnit": 100.0,
-  "baseUnitId": 1
+  //"barcode": "123456789012312",
+  "pricePerKg": 580,
+  "baseUnitId": 1,
+  "categories": [
+    {
+      "categoryId": 1
+    }
+  ],
+  "cuts": [
+    {
+      "cutId": 1,
+      "pricePerKg": 580
+    },
+    {
+      "cutId": 2,
+      "pricePerUnit": 10
+    },
+    {
+      "cutId": 3,
+      "pricePerKg": 300
+    }
+  ]
 }
 
 ### get product by id
-GET http://localhost:3000/products/1
+GET http://localhost:3000/products/9
 
 ### update product
 PATCH http://localhost:3000/products/1
@@ -26,4 +44,7 @@ Content-Type: application/json
 }
 
 ### delete product
-DELETE http://localhost:3000/products/2
+DELETE http://localhost:3000/products/5
+
+### get products with categories and cuts
+GET http://localhost:3000/products?include=categories,cuts

@@ -50,6 +50,9 @@ async function main() {
       categories: {
         create: [{ category: { connect: { name: 'Viscera Roja' } } }],
       },
+      cuts: {
+        create: [{ cut: { connect: { name: 'Entera' } } }],
+      },
     },
   });
 
