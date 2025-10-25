@@ -88,7 +88,7 @@ model TicketItem {
   subtotal  Decimal @db.Decimal(10, 2)
   cut       Cut?    @relation(fields: [cutId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
-  ticket    Ticket  @relation(fields: [ticketId], references: [id])
+  ticket    Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
 model User {
