@@ -44,7 +44,7 @@ model Unit {
   id               Int       @id @default(autoincrement())
   name             String    @unique
   abbreviation     String    @unique
-  conversionFactor Float? // in kg
+  conversionFactor Float?
   products         Product[]
 }
 

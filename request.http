@@ -1,9 +1,12 @@
+@localhost = http://localhost:3000
+@render = https://sistema-gestion-carnica-backend.onrender.com
+
 # ===========================================
 # PRODUCTS API TESTS
 # ===========================================
 
 ### Get all active products
-GET http://localhost:3000/products
+GET {{render}}/products
 
 ### Get all products with categories and cuts
 GET http://localhost:3000/products?include=categories,cuts
