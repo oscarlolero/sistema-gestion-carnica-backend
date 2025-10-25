@@ -1,50 +1,254 @@
-### test
+# ===========================================
+# PRODUCTS API TESTS
+# ===========================================
+
+### Get all active products
 GET http://localhost:3000/products
 
-### create product
+### Get all products with categories and cuts
+GET http://localhost:3000/products?include=categories,cuts
+
+### Create Product 1: Premium Beef Rib
 POST http://localhost:3000/products
 Content-Type: application/json
 
 {
-  "name": "Lomito super",
-  "description": "Description 1",
-  //"barcode": "123456789012312",
-  "pricePerKg": 580,
+  "name": "Costilla de Res Premium",
+  "description": "Costilla de res de primera calidad, perfecta para asar",
+  //"barcode": "1234567890002",
+  "pricePerKg": 280.0,
   "baseUnitId": 1,
+  "isActive": true,
   "categories": [
     {
-      "categoryId": 1
+      "categoryId": 5
+    },
+    {
+      "categoryId": 3
     }
   ],
   "cuts": [
     {
       "cutId": 1,
-      "pricePerKg": 580
-    },
-    {
-      "cutId": 2,
-      "pricePerUnit": 10
+      "pricePerKg": 280.0
     },
     {
       "cutId": 3,
-      "pricePerKg": 300
+      "pricePerKg": 300.0
     }
   ]
 }
 
-### get product by id
-GET http://localhost:3000/products/9
+### Create Product 2: Organic Chicken Breast
+POST http://localhost:3000/products
+Content-Type: application/json
 
-### update product
+{
+  "name": "Pechuga de Pollo Orgánica",
+  "description": "Pechuga de pollo orgánico, libre de hormonas",
+  //"barcode": "1234567890002",
+  "pricePerKg": 120.0,
+  "baseUnitId": 1,
+  "isActive": true,
+  "categories": [
+    {
+      "categoryId": 6
+    }
+  ],
+  "cuts": [
+    {
+      "cutId": 7,
+      "pricePerKg": 140.0
+    },
+    {
+      "cutId": 8,
+      "pricePerKg": 130.0
+    }
+  ]
+}
+
+### Get Product 1 by ID
+GET http://localhost:3000/products/1
+
+### Get Product 2 by ID
+GET http://localhost:3000/products/2
+
+### Update Product 1 - Change price
 PATCH http://localhost:3000/products/1
 Content-Type: application/json
 
 {
-  "name": "beef 3"
+  "pricePerKg": 290.0,
+  "description": "Costilla de res premium actualizada con nuevo precio"
 }
 
-### delete product
-DELETE http://localhost:3000/products/5
+### Update Product 2 - Add new cut
+PATCH http://localhost:3000/products/2
+Content-Type: application/json
 
-### get products with categories and cuts
-GET http://localhost:3000/products?include=categories,cuts
+{
+  "cuts": [
+    {
+      "cutId": 7,
+      "pricePerKg": 145.0
+    },
+    {
+      "cutId": 8,
+      "pricePerKg": 135.0
+    },
+    {
+      "cutId": 1,
+      "pricePerKg": 125.0
+    }
+  ]
+}
+
+### Delete Product 1
+DELETE http://localhost:3000/products/1
+
+### Delete Product 2
+DELETE http://localhost:3000/products/2
+
+# ===========================================
+# TICKETS API TESTS
+# ===========================================
+
+### Get all tickets
+GET http://localhost:3000/tickets
+
+### Create Ticket 1: Large Premium Order
+POST http://localhost:3000/tickets
+Content-Type: application/json
+
+{
+  "date": "2024-01-15T10:30:00Z",
+  "total": 1250.0,
+  "paymentType": "Efectivo",
+  "userId": 1,
+  "printed": true,
+  "items": [
+    {
+      "productId": 1,
+      "cutId": 1,
+      "quantity": 2.5,
+      "unitPrice": 280.0,
+      "subtotal": 700.0
+    },
+    {
+      "productId": 2,
+      "cutId": 7,
+      "quantity": 1.0,
+      "unitPrice": 140.0,
+      "subtotal": 140.0
+    },
+    {
+      "productId": 5,
+      "quantity": 20,
+      "unitPrice": 0.5,
+      "subtotal": 10.0
+    }
+  ]
+}
+
+### Create Ticket 2: Family Order
+POST http://localhost:3000/tickets
+Content-Type: application/json
+
+{
+  "date": "2024-01-15T14:20:00Z",
+  "total": 380.0,
+  "paymentType": "Tarjeta",
+  "userId": 2,
+  "printed": true,
+  "items": [
+    {
+      "productId": 3,
+      "cutId": 1,
+      "quantity": 2.0,
+      "unitPrice": 95.0,
+      "subtotal": 190.0
+    },
+    {
+      "productId": 2,
+      "cutId": 8,
+      "quantity": 1.5,
+      "unitPrice": 130.0,
+      "subtotal": 195.0
+    }
+  ]
+}
+
+### Get Ticket 1 by ID
+GET http://localhost:3000/tickets/1
+
+### Get Ticket 2 by ID
+GET http://localhost:3000/tickets/2
+
+### Update Ticket 1 - Change payment type and add item
+PATCH http://localhost:3000/tickets/1
+Content-Type: application/json
+
+{
+  "paymentType": "Tarjeta",
+  "total": 1300.0,
+  "items": [
+    {
+      "productId": 1,
+      "cutId": 1,
+      "quantity": 2.5,
+      "unitPrice": 280.0,
+      "subtotal": 700.0
+    },
+    {
+      "productId": 2,
+      "cutId": 7,
+      "quantity": 1.0,
+      "unitPrice": 140.0,
+      "subtotal": 140.0
+    },
+    {
+      "productId": 5,
+      "quantity": 20,
+      "unitPrice": 0.5,
+      "subtotal": 10.0
+    },
+    {
+      "productId": 3,
+      "cutId": 1,
+      "quantity": 1.0,
+      "unitPrice": 95.0,
+      "subtotal": 95.0
+    }
+  ]
+}
+
+### Update Ticket 2 - Mark as printed and change total
+PATCH http://localhost:3000/tickets/2
+Content-Type: application/json
+
+{
+  "printed": true,
+  "total": 400.0,
+  "items": [
+    {
+      "productId": 3,
+      "cutId": 1,
+      "quantity": 2.0,
+      "unitPrice": 100.0,
+      "subtotal": 200.0
+    },
+    {
+      "productId": 2,
+      "cutId": 8,
+      "quantity": 1.5,
+      "unitPrice": 130.0,
+      "subtotal": 195.0
+    }
+  ]
+}
+
+### Delete Ticket 1
+DELETE http://localhost:3000/tickets/1
+
+### Delete Ticket 2
+DELETE http://localhost:3000/tickets/2
