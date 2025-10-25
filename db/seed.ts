@@ -16,7 +16,7 @@ async function main() {
     create: { name: 'Pieza', abbreviation: 'pza', conversionFactor: 0.5 },
   });
 
-  const lb = await prisma.unit.upsert({
+  await prisma.unit.upsert({
     where: { name: 'Libra' },
     update: {},
     create: { name: 'Libra', abbreviation: 'lb', conversionFactor: 0.453592 },

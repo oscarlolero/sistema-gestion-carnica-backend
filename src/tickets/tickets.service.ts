@@ -20,7 +20,6 @@ type TicketWithRelations = Prisma.TicketGetPayload<{
 
 @Injectable()
 export class TicketsService {
-
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createTicketDto: CreateTicketDto): Promise<TicketWithRelations> {
