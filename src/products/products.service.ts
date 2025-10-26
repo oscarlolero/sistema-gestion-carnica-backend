@@ -50,7 +50,7 @@ export class ProductsService {
 
   async findAll(): Promise<Product[]> {
     return this.prisma.product.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { name: 'asc' },
     });
   }
 
@@ -112,8 +112,8 @@ export class ProductsService {
     }
 
     // Build orderBy clause
-    const orderByField = sortBy || 'createdAt';
-    const orderDirection = order || 'desc';
+    const orderByField = sortBy || 'name';
+    const orderDirection = order || 'asc';
     const orderBy: Prisma.ProductOrderByWithRelationInput = {
       [orderByField]: orderDirection,
     };
@@ -153,6 +153,7 @@ export class ProductsService {
         id: true,
         name: true,
         description: true,
+        sku: true,
         barcode: true,
         pricePerKg: true,
         pricePerUnit: true,
@@ -242,6 +243,10 @@ export class ProductsService {
       data.description = dto.description ?? null;
     }
 
+    if (dto.sku !== undefined) {
+      data.sku = dto.sku ?? null;
+    }
+
     if (dto.barcode !== undefined) {
       data.barcode = dto.barcode ?? null;
     }
@@ -274,6 +279,10 @@ export class ProductsService {
 
     if (dto.description !== undefined) {
       data.description = dto.description ?? null;
+    }
+
+    if (dto.sku !== undefined) {
+      data.sku = dto.sku ?? null;
     }
 
     if (dto.barcode !== undefined) {

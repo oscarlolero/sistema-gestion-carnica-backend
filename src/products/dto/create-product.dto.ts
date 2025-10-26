@@ -28,6 +28,7 @@ export const createProductSchema = z
   .object({
     name: z.string().min(1).max(255),
     description: z.string().max(500).nullish(),
+    sku: z.string().min(1).max(128).nullish(),
     barcode: z.string().min(1).max(128).nullish(),
     pricePerKg: nonNegativeNumber.nullish(),
     pricePerUnit: nonNegativeNumber.nullish(),
