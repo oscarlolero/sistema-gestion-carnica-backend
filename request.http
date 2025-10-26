@@ -11,6 +11,24 @@ GET {{render}}/products
 ### Get all products with categories and cuts
 GET http://localhost:3000/products?include=categories,cuts
 
+### Get all categories
+GET {{localhost}}/products/categories
+
+### Get all categories (render)
+GET {{render}}/products/categories
+
+### Get all units
+GET {{localhost}}/products/units
+
+### Get all units (render)
+GET {{render}}/products/units
+
+### Get all cuts
+GET {{localhost}}/products/cuts
+
+### Get all cuts (render)
+GET {{render}}/products/cuts
+
 ### Create Product 1: Premium Beef Rib
 POST http://localhost:3000/products
 Content-Type: application/json

@@ -32,6 +32,16 @@ export class ProductsController {
     return this.productsService.findAllCuts();
   }
 
+  @Get('categories')
+  findAllCategories() {
+    return this.productsService.findAllCategories();
+  }
+
+  @Get('units')
+  findAllUnits() {
+    return this.productsService.findAllUnits();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);

@@ -12,6 +12,18 @@ export class ProductsService {
     return this.prisma.cut.findMany();
   }
 
+  async findAllCategories() {
+    return this.prisma.category.findMany({
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async findAllUnits() {
+    return this.prisma.unit.findMany({
+      orderBy: { name: 'asc' },
+    });
+  }
+
   async create(createProductDto: CreateProductDto): Promise<Product> {
     return this.prisma.product.create({
       data: {
