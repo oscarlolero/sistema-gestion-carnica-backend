@@ -7,10 +7,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { QueryTicketsDto } from './dto/query-tickets.dto';
 
 @Controller('tickets')
 export class TicketsController {
@@ -22,8 +24,29 @@ export class TicketsController {
   }
 
   @Get()
-  findAll() {
-    return this.ticketsService.findAll();
+  findAll(@Query() query: QueryTicketsDto) {
+    const pageNum = query.page ? parseInt(query.page, 10) : 1;
+    const limitNum = query.limit ? parseInt(query.limit, 10) : 10;
+    const userId = query.userId ? parseInt(query.userId, 10) : undefined;
+    const printed =
+      query.printed === 'true'
+        ? true
+        : query.printed === 'false'
+          ? false
+          : undefined;
+
+    return this.ticketsService.findAll(
+      pageNum,
+      limitNum,
+      query.search,
+      query.paymentType,
+      userId,
+      printed,
+      query.startDate,
+      query.endDate,
+      query.sortBy,
+      query.order,
+    );
   }
 
   @Get(':id')

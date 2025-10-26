@@ -137,6 +137,36 @@ GET http://localhost:3000/products/cuts
 # TICKETS API TESTS
 # ===========================================
 
+### Get all tickets with pagination
+GET http://localhost:3000/tickets?page=1&limit=10
+
+### Get all tickets with search (by payment type or product name)
+GET http://localhost:3000/tickets?search=Efectivo
+
+### Get all tickets by payment type
+GET http://localhost:3000/tickets?paymentType=Efectivo
+
+### Get all tickets by user
+GET http://localhost:3000/tickets?userId=1
+
+### Get all printed tickets
+GET http://localhost:3000/tickets?printed=true
+
+### Get all unprinted tickets
+GET http://localhost:3000/tickets?printed=false
+
+### Get all tickets by date range
+GET http://localhost:3000/tickets?startDate=2024-01-01&endDate=2024-01-31
+
+### Get all tickets sorted by total (ascending)
+GET http://localhost:3000/tickets?sortBy=total&order=asc
+
+### Get all tickets sorted by date (descending) - default
+GET http://localhost:3000/tickets?sortBy=date&order=desc
+
+### Get all tickets with combined filters
+GET http://localhost:3000/tickets?paymentType=Efectivo&printed=true&startDate=2024-01-01&endDate=2024-01-31&sortBy=total&order=desc
+
 ### Get all tickets
 GET http://localhost:3000/tickets
 

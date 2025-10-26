@@ -40,11 +40,17 @@ describe('ProductsController', () => {
 
   it('finds active products with query include', async () => {
     const products = [{ id: 1 }];
+    const query = { select: 'categories,cuts' } as any;
     mockProductsService.findActive.mockResolvedValue(products);
 
-    await expect(controller.findAll('categories,cuts')).resolves.toBe(products);
+    await expect(controller.findAll(query)).resolves.toBe(products);
     expect(mockProductsService.findActive).toHaveBeenCalledWith(
       'categories,cuts',
+      1,
+      10,
+      undefined,
+      undefined,
+      undefined,
     );
   });
 

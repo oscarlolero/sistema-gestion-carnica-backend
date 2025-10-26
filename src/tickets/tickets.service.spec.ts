@@ -66,13 +66,22 @@ describe('TicketsService', () => {
     );
   });
 
-  it('returns all tickets ordered by date', async () => {
+  it('returns all tickets with pagination', async () => {
     const tickets = [{ id: 1 }, { id: 2 }];
     prismaTicket.findMany.mockResolvedValue(tickets);
+    prismaTicket.count.mockResolvedValue(2);
 
     const result = await service.findAll();
 
-    expect(result).toBe(tickets);
+    expect(result.data).toBe(tickets);
+    expect(result.pagination).toEqual({
+      page: 1,
+      limit: 10,
+      total: 2,
+      totalPages: 1,
+      hasNext: false,
+      hasPrev: false,
+    });
     expect(prismaTicket.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ orderBy: { date: 'desc' } }),
     );

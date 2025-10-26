@@ -29,11 +29,101 @@ export class TicketsService {
     });
   }
 
-  async findAll(): Promise<TicketWithRelations[]> {
-    return this.prisma.ticket.findMany({
-      include: ticketInclude,
-      orderBy: { date: 'desc' },
-    });
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    paymentType?: string,
+    userId?: number,
+    printed?: boolean,
+    startDate?: string,
+    endDate?: string,
+    sortBy?: 'date' | 'createdAt' | 'updatedAt' | 'total',
+    order?: 'asc' | 'desc',
+  ): Promise<{
+    data: TicketWithRelations[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  }> {
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.TicketWhereInput = {};
+
+    if (search && search.trim()) {
+      whereClause.OR = [
+        { paymentType: { contains: search.trim(), mode: 'insensitive' } },
+        {
+          items: {
+            some: {
+              product: {
+                name: { contains: search.trim(), mode: 'insensitive' },
+              },
+            },
+          },
+        },
+      ];
+    }
+
+    if (paymentType) {
+      whereClause.paymentType = paymentType;
+    }
+
+    if (userId !== undefined) {
+      whereClause.userId = userId;
+    }
+
+    if (printed !== undefined) {
+      whereClause.printed = printed;
+    }
+
+    if (startDate || endDate) {
+      whereClause.date = {};
+      if (startDate) {
+        whereClause.date.gte = new Date(startDate);
+      }
+      if (endDate) {
+        whereClause.date.lte = new Date(endDate);
+      }
+    }
+
+    const orderByField = sortBy || 'date';
+    const orderDirection = order || 'desc';
+    const orderBy: Prisma.TicketOrderByWithRelationInput = {
+      [orderByField]: orderDirection,
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.ticket.findMany({
+        where: whereClause,
+        include: ticketInclude,
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      this.prisma.ticket.count({
+        where: whereClause,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
   }
 
   async findOne(id: number): Promise<TicketWithRelations> {

@@ -38,12 +38,23 @@ describe('TicketsController', () => {
     expect(mockTicketsService.create).toHaveBeenCalledWith(dto);
   });
 
-  it('returns all tickets', async () => {
-    const tickets = [{ id: 1 }];
-    mockTicketsService.findAll.mockResolvedValue(tickets);
+  it('returns all tickets with pagination', async () => {
+    const response = { data: [{ id: 1 }], pagination: { total: 1 } };
+    mockTicketsService.findAll.mockResolvedValue(response);
 
-    await expect(controller.findAll()).resolves.toBe(tickets);
-    expect(mockTicketsService.findAll).toHaveBeenCalledWith();
+    await expect(controller.findAll({})).resolves.toBe(response);
+    expect(mockTicketsService.findAll).toHaveBeenCalledWith(
+      1,
+      10,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
   });
 
   it('returns a ticket by id', async () => {
