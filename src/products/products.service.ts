@@ -54,7 +54,21 @@ export class ProductsService {
     });
   }
 
-  async findActive(include?: string): Promise<Product[]> {
+  async findActive(
+    include?: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    data: Product[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  }> {
     const includeOptions: Prisma.ProductInclude = {};
 
     if (include) {
@@ -77,13 +91,38 @@ export class ProductsService {
       }
     }
 
-    return this.prisma.product.findMany({
-      where: {
-        isActive: true,
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where: {
+          isActive: true,
+        },
+        include: includeOptions,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.product.count({
+        where: {
+          isActive: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       },
-      include: includeOptions,
-      orderBy: { createdAt: 'desc' },
-    });
+    };
   }
 
   async findOne(id: number): Promise<Product> {
