@@ -27,6 +27,11 @@ export class ProductsController {
     return this.productsService.findActive(include);
   }
 
+  @Get('cuts')
+  findAllCuts() {
+    return this.productsService.findAllCuts();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
