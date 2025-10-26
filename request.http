@@ -9,7 +9,7 @@
 GET {{localhost}}/products
 
 ### Get all products with categories and cuts
-GET {{localhost}}/products?include=categories,cuts
+GET {{localhost}}/products?include=categories,cuts&page=1&limit=3
 
 ### Get all categories
 GET {{localhost}}/products/categories

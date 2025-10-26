@@ -27,10 +27,11 @@ export class ProductsController {
     @Query('select') select?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('search') search?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.productsService.findActive(select, pageNum, limitNum);
+    return this.productsService.findActive(select, pageNum, limitNum, search);
   }
 
   @Get('cuts')

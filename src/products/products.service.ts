@@ -58,6 +58,7 @@ export class ProductsService {
     select?: string,
     page: number = 1,
     limit: number = 10,
+    search?: string,
   ): Promise<{
     data: Product[];
     pagination: {
@@ -96,20 +97,28 @@ export class ProductsService {
       }
     }
 
+    // Build where clause with search functionality
+    const whereClause: Prisma.ProductWhereInput = {
+      isActive: true,
+    };
+
+    if (search && search.trim()) {
+      whereClause.name = {
+        contains: search.trim(),
+        mode: 'insensitive',
+      };
+    }
+
     const [data, total] = await Promise.all([
       this.prisma.product.findMany({
-        where: {
-          isActive: true,
-        },
+        where: whereClause,
         include: includeOptions,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
       this.prisma.product.count({
-        where: {
-          isActive: true,
-        },
+        where: whereClause,
       }),
     ]);
 
