@@ -12,6 +12,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { QueryProductsDto } from './dto/query-products.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -23,15 +24,17 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(
-    @Query('select') select?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-    @Query('search') search?: string,
-  ) {
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.productsService.findActive(select, pageNum, limitNum, search);
+  findAll(@Query() query: QueryProductsDto) {
+    const pageNum = query.page ? parseInt(query.page, 10) : 1;
+    const limitNum = query.limit ? parseInt(query.limit, 10) : 10;
+    return this.productsService.findActive(
+      query.select,
+      pageNum,
+      limitNum,
+      query.search,
+      query.sortBy,
+      query.order,
+    );
   }
 
   @Get('cuts')

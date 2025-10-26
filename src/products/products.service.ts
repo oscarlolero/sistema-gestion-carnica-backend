@@ -59,6 +59,8 @@ export class ProductsService {
     page: number = 1,
     limit: number = 10,
     search?: string,
+    sortBy?: 'createdAt' | 'updatedAt' | 'name' | 'isActive',
+    order?: 'asc' | 'desc',
   ): Promise<{
     data: Product[];
     pagination: {
@@ -109,11 +111,18 @@ export class ProductsService {
       };
     }
 
+    // Build orderBy clause
+    const orderByField = sortBy || 'createdAt';
+    const orderDirection = order || 'desc';
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {
+      [orderByField]: orderDirection,
+    };
+
     const [data, total] = await Promise.all([
       this.prisma.product.findMany({
         where: whereClause,
         include: includeOptions,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         skip,
         take: limit,
       }),
