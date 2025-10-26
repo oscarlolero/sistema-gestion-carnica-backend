@@ -55,7 +55,7 @@ export class ProductsService {
   }
 
   async findActive(
-    include?: string,
+    select?: string,
     page: number = 1,
     limit: number = 10,
   ): Promise<{
@@ -69,29 +69,32 @@ export class ProductsService {
       hasPrev: boolean;
     };
   }> {
+    const skip = (page - 1) * limit;
+
+    // Build include options based on select parameter
     const includeOptions: Prisma.ProductInclude = {};
 
-    if (include) {
-      const includeArray = include.split(',').map((item) => item.trim());
+    if (select) {
+      const selectArray = select.split(',').map((item) => item.trim());
 
-      if (includeArray.includes('categories')) {
+      if (selectArray.includes('categories')) {
         includeOptions.categories = {
-          include: {
-            category: true,
+          select: {
+            categoryId: true,
           },
         };
       }
 
-      if (includeArray.includes('cuts')) {
+      if (selectArray.includes('cuts')) {
         includeOptions.cuts = {
-          include: {
-            cut: true,
+          select: {
+            cutId: true,
+            pricePerKg: true,
+            pricePerUnit: true,
           },
         };
       }
     }
-
-    const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
       this.prisma.product.findMany({
@@ -128,15 +131,27 @@ export class ProductsService {
   async findOne(id: number): Promise<Product> {
     const product = await this.prisma.product.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        barcode: true,
+        pricePerKg: true,
+        pricePerUnit: true,
+        isActive: true,
+        baseUnitId: true,
+        createdAt: true,
+        updatedAt: true,
         categories: {
-          include: {
-            category: true,
+          select: {
+            categoryId: true,
           },
         },
         cuts: {
-          include: {
-            cut: true,
+          select: {
+            cutId: true,
+            pricePerKg: true,
+            pricePerUnit: true,
           },
         },
       },

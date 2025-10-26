@@ -24,13 +24,13 @@ export class ProductsController {
 
   @Get()
   findAll(
-    @Query('include') include?: string,
+    @Query('select') select?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
-    return this.productsService.findActive(include, pageNum, limitNum);
+    return this.productsService.findActive(select, pageNum, limitNum);
   }
 
   @Get('cuts')

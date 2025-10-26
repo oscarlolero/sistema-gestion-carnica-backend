@@ -6,10 +6,10 @@
 # ===========================================
 
 ### Get all active products
-GET {{render}}/products
+GET {{localhost}}/products
 
 ### Get all products with categories and cuts
-GET http://localhost:3000/products?include=categories,cuts
+GET {{localhost}}/products?include=categories,cuts
 
 ### Get all categories
 GET {{localhost}}/products/categories
