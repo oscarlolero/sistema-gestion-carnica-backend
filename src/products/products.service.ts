@@ -105,10 +105,10 @@ export class ProductsService {
     };
 
     if (search && search.trim()) {
-      whereClause.name = {
-        contains: search.trim(),
-        mode: 'insensitive',
-      };
+      whereClause.OR = [
+        { name: { contains: search.trim(), mode: 'insensitive' } },
+        { sku: { contains: search.trim(), mode: 'insensitive' } },
+      ];
     }
 
     // Build orderBy clause
