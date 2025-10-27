@@ -28,20 +28,12 @@ export class TicketsController {
     const pageNum = query.page ? parseInt(query.page, 10) : 1;
     const limitNum = query.limit ? parseInt(query.limit, 10) : 10;
     const userId = query.userId ? parseInt(query.userId, 10) : undefined;
-    const printed =
-      query.printed === 'true'
-        ? true
-        : query.printed === 'false'
-          ? false
-          : undefined;
 
     return this.ticketsService.findAll(
       pageNum,
       limitNum,
       query.search,
-      query.paymentType,
       userId,
-      printed,
       query.startDate,
       query.endDate,
       query.sortBy,

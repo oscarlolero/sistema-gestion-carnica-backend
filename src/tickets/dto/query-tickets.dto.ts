@@ -5,9 +5,7 @@ export const queryTicketsSchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
   search: z.string().optional(),
-  paymentType: z.string().optional(),
   userId: z.string().optional(),
-  printed: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   sortBy: z.enum(['date', 'createdAt', 'updatedAt', 'total']).optional(),
@@ -15,4 +13,3 @@ export const queryTicketsSchema = z.object({
 });
 
 export class QueryTicketsDto extends createZodDto(queryTicketsSchema) {}
-

@@ -33,9 +33,7 @@ export class TicketsService {
     page: number = 1,
     limit: number = 10,
     search?: string,
-    paymentType?: string,
     userId?: number,
-    printed?: boolean,
     startDate?: string,
     endDate?: string,
     sortBy?: 'date' | 'createdAt' | 'updatedAt' | 'total',
@@ -70,16 +68,8 @@ export class TicketsService {
       ];
     }
 
-    if (paymentType) {
-      whereClause.paymentType = paymentType;
-    }
-
     if (userId !== undefined) {
       whereClause.userId = userId;
-    }
-
-    if (printed !== undefined) {
-      whereClause.printed = printed;
     }
 
     if (startDate || endDate) {
