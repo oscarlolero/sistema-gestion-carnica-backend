@@ -75,6 +75,7 @@ model Ticket {
   userId      Int?
   printed     Boolean      @default(false)
   createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt @default(now())
   user        User?        @relation(fields: [userId], references: [id])
   items       TicketItem[]
 }

@@ -15,3 +15,4 @@ export const queryTicketsSchema = z.object({
 });
 
 export class QueryTicketsDto extends createZodDto(queryTicketsSchema) {}
+
