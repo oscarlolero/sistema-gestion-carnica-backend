@@ -1,12 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Prisma, Product, Cut } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   async findAllCuts(): Promise<Cut[]> {
     return this.prisma.cut.findMany();
@@ -224,8 +232,35 @@ export class ProductsService {
   async remove(id: number): Promise<Product> {
     await this.ensureExists(id);
 
-    return this.prisma.product.delete({
+    const ticketItemsCount = await this.prisma.ticketItem.count({
+      where: { productId: id },
+    });
+
+    if (ticketItemsCount > 0) {
+      throw new BadRequestException(
+        `No se puede eliminar el producto con id ${id} porque tiene ${ticketItemsCount} ticket(s) asociado(s)`,
+      );
+    }
+
+    const product = await this.prisma.product.findUnique({
       where: { id },
+      select: { imageUrl: true },
+    });
+
+    if (product?.imageUrl) {
+      try {
+        await this.cloudinaryService.deleteImage(product.imageUrl);
+      } catch (error) {
+        console.error(
+          `Failed to delete image from Cloudinary for product ${id}:`,
+          error,
+        );
+      }
+    }
+
+    return this.prisma.product.update({
+      where: { id },
+      data: { isActive: false },
     });
   }
 
