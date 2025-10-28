@@ -27,6 +27,8 @@ export class ProductsController {
   findAll(@Query() query: QueryProductsDto) {
     const pageNum = query.page ? parseInt(query.page, 10) : 1;
     const limitNum = query.limit ? parseInt(query.limit, 10) : 10;
+    const includeInactive =
+      query.includeInactive === 'true' || query.includeInactive === '1';
     return this.productsService.findActive(
       query.select,
       pageNum,
@@ -34,6 +36,7 @@ export class ProductsController {
       query.search,
       query.sortBy,
       query.order,
+      includeInactive,
     );
   }
 

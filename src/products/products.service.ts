@@ -63,6 +63,7 @@ export class ProductsService {
     search?: string,
     sortBy?: 'createdAt' | 'updatedAt' | 'name' | 'isActive',
     order?: 'asc' | 'desc',
+    includeInactive: boolean = false,
   ): Promise<{
     data: Product[];
     pagination: {
@@ -108,9 +109,11 @@ export class ProductsService {
     }
 
     // Build where clause with search functionality
-    const whereClause: Prisma.ProductWhereInput = {
-      isActive: true,
-    };
+    const whereClause: Prisma.ProductWhereInput = {};
+
+    if (!includeInactive) {
+      whereClause.isActive = true;
+    }
 
     if (search && search.trim()) {
       whereClause.OR = [

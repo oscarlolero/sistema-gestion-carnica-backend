@@ -8,6 +8,7 @@ export const queryProductsSchema = z.object({
   search: z.string().optional(),
   sortBy: z.enum(['createdAt', 'updatedAt', 'name', 'isActive']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
+  includeInactive: z.string().optional(),
 });
 
 export class QueryProductsDto extends createZodDto(queryProductsSchema) {}
