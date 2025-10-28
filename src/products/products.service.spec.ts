@@ -26,7 +26,6 @@ describe('ProductsService', () => {
   it('creates a product with mapped nested relations', async () => {
     const dto = {
       name: 'Ribeye',
-      baseUnitId: 1,
       pricePerKg: 250,
       pricePerUnit: null,
       categories: [{ categoryId: 10 }],

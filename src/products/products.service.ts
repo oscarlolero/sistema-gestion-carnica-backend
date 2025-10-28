@@ -18,12 +18,6 @@ export class ProductsService {
     });
   }
 
-  async findAllUnits() {
-    return this.prisma.unit.findMany({
-      orderBy: { name: 'asc' },
-    });
-  }
-
   async create(createProductDto: CreateProductDto): Promise<Product> {
     return this.prisma.product.create({
       data: {
@@ -164,7 +158,6 @@ export class ProductsService {
         pricePerKg: true,
         pricePerUnit: true,
         isActive: true,
-        baseUnitId: true,
         createdAt: true,
         updatedAt: true,
         categories: {
@@ -248,7 +241,6 @@ export class ProductsService {
   ): Prisma.ProductUncheckedCreateInput {
     const data: Prisma.ProductUncheckedCreateInput = {
       name: dto.name,
-      baseUnitId: dto.baseUnitId,
     };
 
     if (dto.description !== undefined) {
@@ -299,10 +291,6 @@ export class ProductsService {
 
     if (dto.barcode !== undefined) {
       data.barcode = dto.barcode ?? null;
-    }
-
-    if (dto.baseUnitId !== undefined) {
-      data.baseUnitId = dto.baseUnitId;
     }
 
     if (dto.isActive !== undefined) {

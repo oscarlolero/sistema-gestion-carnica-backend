@@ -3,20 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1️⃣ Create or reuse base units
-  const kg = await prisma.unit.upsert({
-    where: { name: 'Kilogramo' },
-    update: {},
-    create: { name: 'Kilogramo', abbreviation: 'kg', conversionFactor: 1.0 },
-  });
-
-  const pza = await prisma.unit.upsert({
-    where: { name: 'Pieza' },
-    update: {},
-    create: { name: 'Pieza', abbreviation: 'pza', conversionFactor: 0.5 },
-  });
-
-  // 2️⃣ Create cuts
+  // 1️⃣ Create cuts
   await prisma.cut.createMany({
     data: [
       { name: 'Entera', description: 'Corte completo sin modificar' },
@@ -31,7 +18,7 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // 3️⃣ Create categories
+  // 2️⃣ Create categories
   await prisma.category.createMany({
     data: [
       { name: 'Cajas de Menudo', description: 'Productos de menudencia' },
@@ -44,7 +31,7 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // 4️⃣ Create users
+  // 3️⃣ Create users
   const user1 = await prisma.user.upsert({
     where: { email: 'oscar@carniceria.com' },
     update: {},
@@ -65,7 +52,7 @@ async function main() {
     },
   });
 
-  // 5️⃣ Create 5 creative products
+  // 4️⃣ Create 5 creative products
   const products = await Promise.all([
     // Product 1: Premium Beef Rib
     prisma.product.create({
@@ -74,7 +61,6 @@ async function main() {
         description: 'Costilla de res de primera calidad, perfecta para asar',
         barcode: '1234567890001',
         pricePerKg: 280.0,
-        baseUnitId: kg.id,
         categories: {
           create: [
             { category: { connect: { name: 'Carnes Premium' } } },
@@ -97,7 +83,6 @@ async function main() {
         description: 'Pechuga de pollo orgánico, libre de hormonas',
         barcode: '1234567890002',
         pricePerKg: 120.0,
-        baseUnitId: kg.id,
         categories: {
           create: [{ category: { connect: { name: 'Carnes Regulares' } } }],
         },
@@ -117,7 +102,6 @@ async function main() {
         description: 'Chuletas de cerdo frescas, ideales para la parrilla',
         barcode: '1234567890003',
         pricePerKg: 95.0,
-        baseUnitId: kg.id,
         categories: {
           create: [{ category: { connect: { name: 'Carnes Regulares' } } }],
         },
@@ -137,7 +121,6 @@ async function main() {
         description: 'Hígado de res fresco, rico en hierro',
         barcode: '1234567890004',
         pricePerKg: 45.0,
-        baseUnitId: kg.id,
         categories: {
           create: [
             { category: { connect: { name: 'Viscera Roja' } } },
@@ -160,7 +143,6 @@ async function main() {
         description: 'Bolsas plásticas medianas para empaque de carnes',
         barcode: '1234567890005',
         pricePerUnit: 0.5,
-        baseUnitId: pza.id,
         categories: {
           create: [{ category: { connect: { name: 'Bolsas' } } }],
         },
@@ -168,7 +150,7 @@ async function main() {
     }),
   ]);
 
-  // 6️⃣ Create 5 realistic tickets
+  // 5️⃣ Create 5 realistic tickets
   const tickets = await Promise.all([
     // Ticket 1: Large order with premium beef
     prisma.ticket.create({

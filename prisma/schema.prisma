@@ -16,10 +16,8 @@ model Product {
   pricePerKg   Decimal?          @db.Decimal(10, 2)
   pricePerUnit Decimal?          @db.Decimal(10, 2)
   isActive     Boolean           @default(true)
-  baseUnitId   Int
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  baseUnit     Unit              @relation(fields: [baseUnitId], references: [id])
   categories   ProductCategory[]
   cuts         ProductCut[]
   ticketItems  TicketItem[]
@@ -39,14 +37,6 @@ model ProductCategory {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([productId, categoryId])
-}
-
-model Unit {
-  id               Int       @id @default(autoincrement())
-  name             String    @unique
-  abbreviation     String    @unique
-  conversionFactor Float?
-  products         Product[]
 }
 
 model Cut {

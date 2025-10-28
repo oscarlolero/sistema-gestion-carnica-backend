@@ -33,7 +33,6 @@ export const createProductSchema = z
     pricePerKg: nonNegativeNumber.nullish(),
     pricePerUnit: nonNegativeNumber.nullish(),
     isActive: z.boolean().optional(),
-    baseUnitId: z.number().int().positive(),
     categories: z.array(categorySchema).optional(),
     cuts: z.array(cutSchema).optional(),
   })
