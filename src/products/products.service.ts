@@ -155,6 +155,7 @@ export class ProductsService {
         description: true,
         sku: true,
         barcode: true,
+        imageUrl: true,
         pricePerKg: true,
         pricePerUnit: true,
         isActive: true,
@@ -255,6 +256,10 @@ export class ProductsService {
       data.barcode = dto.barcode ?? null;
     }
 
+    if (dto.imageUrl !== undefined) {
+      data.imageUrl = dto.imageUrl ?? null;
+    }
+
     if (dto.isActive !== undefined) {
       data.isActive = dto.isActive;
     }
@@ -291,6 +296,10 @@ export class ProductsService {
 
     if (dto.barcode !== undefined) {
       data.barcode = dto.barcode ?? null;
+    }
+
+    if (dto.imageUrl !== undefined) {
+      data.imageUrl = dto.imageUrl ?? null;
     }
 
     if (dto.isActive !== undefined) {

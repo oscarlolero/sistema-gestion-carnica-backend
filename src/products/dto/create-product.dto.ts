@@ -30,6 +30,7 @@ export const createProductSchema = z
     description: z.string().max(500).nullish(),
     sku: z.string().min(1).max(128).nullish(),
     barcode: z.string().min(1).max(128).nullish(),
+    imageUrl: z.string().url().nullish(),
     pricePerKg: nonNegativeNumber.nullish(),
     pricePerUnit: nonNegativeNumber.nullish(),
     isActive: z.boolean().optional(),

@@ -13,6 +13,7 @@ model Product {
   description  String?
   sku          String?           @unique
   barcode      String?           @unique
+  imageUrl     String?
   pricePerKg   Decimal?          @db.Decimal(10, 2)
   pricePerUnit Decimal?          @db.Decimal(10, 2)
   isActive     Boolean           @default(true)
