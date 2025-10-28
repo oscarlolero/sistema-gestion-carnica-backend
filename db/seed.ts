@@ -16,12 +16,6 @@ async function main() {
     create: { name: 'Pieza', abbreviation: 'pza', conversionFactor: 0.5 },
   });
 
-  await prisma.unit.upsert({
-    where: { name: 'Libra' },
-    update: {},
-    create: { name: 'Libra', abbreviation: 'lb', conversionFactor: 0.453592 },
-  });
-
   // 2️⃣ Create cuts
   await prisma.cut.createMany({
     data: [
