@@ -94,6 +94,12 @@ export class ProductsService {
             cutId: true,
             pricePerKg: true,
             pricePerUnit: true,
+            cut: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         };
       }
@@ -171,6 +177,12 @@ export class ProductsService {
             cutId: true,
             pricePerKg: true,
             pricePerUnit: true,
+            cut: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -315,7 +327,7 @@ export class ProductsService {
       return undefined;
     }
 
-    if (value === null) {
+    if (value === null || value === 0) {
       return null;
     }
 
