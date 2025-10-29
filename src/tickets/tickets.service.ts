@@ -227,6 +227,7 @@ export class TicketsService {
       quantity: this.mapDecimalInput(item.quantity)!,
       unitPrice: this.mapDecimalInput(item.unitPrice)!,
       subtotal: this.mapDecimalInput(item.subtotal)!,
+      unit: item.unit,
     };
   }
 

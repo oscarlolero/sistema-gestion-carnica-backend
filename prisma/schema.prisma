@@ -79,6 +79,7 @@ model TicketItem {
   quantity  Decimal @db.Decimal(10, 2)
   unitPrice Decimal @db.Decimal(10, 2)
   subtotal  Decimal @db.Decimal(10, 2)
+  unit      String  @default("kg") // 'kg' or 'pz'
   cut       Cut?    @relation(fields: [cutId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
   ticket    Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)

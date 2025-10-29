@@ -10,6 +10,7 @@ const ticketItemSchema = z
     quantity: z.number().positive(),
     unitPrice: decimalSchema,
     subtotal: decimalSchema,
+    unit: z.enum(['kg', 'pz']),
   })
   .strict();
 
