@@ -238,4 +238,83 @@ export class TicketsService {
 
     return new Prisma.Decimal(value);
   }
+
+  async getDailySummary(date?: string): Promise<{
+    date: string;
+    totalSales: number;
+    totalTickets: number;
+    items: Array<{
+      productName: string;
+      cutName: string | null;
+      quantity: number;
+      unit: string;
+      totalAmount: number;
+    }>;
+  }> {
+    const targetDate = date ? new Date(date) : new Date();
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const tickets = await this.prisma.ticket.findMany({
+      where: {
+        date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      include: ticketInclude,
+    });
+
+    const totalSales = tickets.reduce(
+      (sum, ticket) => sum + Number(ticket.total),
+      0,
+    );
+    const totalTickets = tickets.length;
+
+    // Aggregate items by product and cut
+    const itemsMap = new Map<
+      string,
+      {
+        productName: string;
+        cutName: string | null;
+        quantity: number;
+        unit: string;
+        totalAmount: number;
+      }
+    >();
+
+    tickets.forEach((ticket) => {
+      ticket.items.forEach((item) => {
+        const unit: string = item.unit || 'kg';
+        const key = `${item.productId}-${item.cutId || 'null'}-${unit}`;
+        const existing = itemsMap.get(key);
+
+        if (existing) {
+          existing.quantity += Number(item.quantity);
+          existing.totalAmount += Number(item.subtotal);
+        } else {
+          itemsMap.set(key, {
+            productName: item.product.name,
+            cutName: item.cut?.name || null,
+            quantity: Number(item.quantity),
+            unit,
+            totalAmount: Number(item.subtotal),
+          });
+        }
+      });
+    });
+
+    const items = Array.from(itemsMap.values()).sort(
+      (a, b) => b.totalAmount - a.totalAmount,
+    );
+
+    return {
+      date: targetDate.toISOString(),
+      totalSales,
+      totalTickets,
+      items,
+    };
+  }
 }

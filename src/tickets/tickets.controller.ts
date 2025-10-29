@@ -41,6 +41,11 @@ export class TicketsController {
     );
   }
 
+  @Get('summary/daily')
+  getDailySummary(@Query('date') date?: string) {
+    return this.ticketsService.getDailySummary(date);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.ticketsService.findOne(id);
