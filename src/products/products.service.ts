@@ -261,9 +261,8 @@ export class ProductsService {
       }
     }
 
-    return this.prisma.product.update({
+    return this.prisma.product.delete({
       where: { id },
-      data: { isActive: false },
     });
   }
 
