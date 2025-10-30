@@ -3,318 +3,302 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1️⃣ Create cuts
+  // 1️⃣ Create only required cuts
   await prisma.cut.createMany({
     data: [
-      { name: 'Entera', description: 'Corte completo sin modificar' },
-      { name: 'Sacada', description: 'Corte con hueso removido' },
+      { name: 'Por Mitad', description: 'Dividido por la mitad' },
+      { name: 'En Cuatro', description: 'Dividido en cuatro partes' },
       { name: 'Rodajas', description: 'Cortado en rodajas delgadas' },
       { name: 'Cruz', description: 'Corte transversal' },
-      { name: 'En Cuatro', description: 'Dividido en cuatro partes' },
-      { name: 'Tapa', description: 'Solo la parte superior' },
-      { name: 'Filete', description: 'Corte fino y tierno' },
-      { name: 'Cubos', description: 'Cortado en cubos pequeños' },
+      { name: 'Sacada', description: 'Tripa sacada' },
+      { name: 'Sin Tapa', description: 'Corte de cabeza sin tapa' },
     ],
     skipDuplicates: true,
   });
 
-  // 2️⃣ Create categories
+  // 2️⃣ Create only required categories
   await prisma.category.createMany({
     data: [
       { name: 'Cajas de Menudo', description: 'Productos de menudencia' },
       { name: 'Viscera Blanca', description: 'Vísceras blancas del animal' },
       { name: 'Viscera Roja', description: 'Vísceras rojas del animal' },
-      { name: 'Bolsas', description: 'Bolsas y empaques' },
-      { name: 'Carnes Premium', description: 'Cortes de alta calidad' },
-      { name: 'Carnes Regulares', description: 'Cortes estándar' },
     ],
     skipDuplicates: true,
   });
 
-  // 3️⃣ Create users
-  const user1 = await prisma.user.upsert({
-    where: { email: 'oscar@carniceria.com' },
-    update: {},
-    create: {
-      name: 'Oscar Montes',
-      email: 'oscar@carniceria.com',
-      role: 'admin',
+  // 3️⃣ Create products for Cajas de Menudo
+  await prisma.product.createMany({
+    data: [
+      {
+        name: 'Menudo National',
+        description: 'Caja de menudo National',
+        pricePerKg: 60,
+      },
+      {
+        name: 'Menudo Excel',
+        description: 'Caja de menudo Excel',
+        pricePerKg: 62,
+      },
+      {
+        name: 'Menudo Washington',
+        description: 'Caja de menudo Washington',
+        pricePerKg: 65,
+      },
+      {
+        name: 'Menudo Canadian',
+        description: 'Caja de menudo Canadian',
+        pricePerKg: 65,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  const cajas = await prisma.category.findUnique({
+    where: { name: 'Cajas de Menudo' },
+  });
+  const visceraBlanca = await prisma.category.findUnique({
+    where: { name: 'Viscera Blanca' },
+  });
+  const visceraRoja = await prisma.category.findUnique({
+    where: { name: 'Viscera Roja' },
+  });
+
+  // Link Cajas de Menudo products to category and cuts (Por Mitad, En Cuatro)
+  const mitadCut = await prisma.cut.findUnique({
+    where: { name: 'Por Mitad' },
+  });
+  const cuatroCut = await prisma.cut.findUnique({
+    where: { name: 'En Cuatro' },
+  });
+
+  const cajasProducts = await prisma.product.findMany({
+    where: {
+      name: {
+        in: [
+          'Menudo National',
+          'Menudo Excel',
+          'Menudo Washington',
+          'Menudo Canadian',
+        ],
+      },
     },
   });
 
-  const user2 = await prisma.user.upsert({
-    where: { email: 'maria@carniceria.com' },
-    update: {},
-    create: {
-      name: 'María González',
-      email: 'maria@carniceria.com',
-      role: 'vendedor',
+  for (const p of cajasProducts) {
+    const base = Number(p.pricePerKg != null ? Number(p.pricePerKg) : 60);
+    await prisma.product.update({
+      where: { id: p.id },
+      data: {
+        categories: cajas
+          ? { create: [{ category: { connect: { name: 'Cajas de Menudo' } } }] }
+          : undefined,
+        cuts: {
+          create: [
+            { cutId: mitadCut!.id, pricePerKg: base },
+            { cutId: cuatroCut!.id, pricePerKg: base + 2 },
+          ],
+        },
+      },
+    });
+  }
+
+  // 4️⃣ Create products for Viscera Blanca
+  await prisma.product.createMany({
+    data: [
+      {
+        name: 'Panza',
+        description: 'Panza',
+        pricePerKg: 50,
+      },
+      {
+        name: 'Libro',
+        description: 'Libro',
+        pricePerKg: 52,
+      },
+      {
+        name: 'Pata morena',
+        description: 'Pata morena',
+        pricePerKg: 40,
+      },
+      {
+        name: 'Pata blanca',
+        description: 'Pata blanca',
+        pricePerKg: 42,
+      },
+      {
+        name: 'Tripa',
+        description: 'Tripa',
+        pricePerKg: 55,
+      },
+      {
+        name: 'Tripa de rastro',
+        description: 'Tripa de rastro',
+        pricePerKg: 54,
+      },
+      {
+        name: 'Quajo',
+        description: 'Quajo',
+        pricePerKg: 48,
+      },
+      {
+        name: 'Teleco',
+        description: 'Teleco (blanca)',
+        pricePerKg: 46,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  const rodajasCut = await prisma.cut.findUnique({
+    where: { name: 'Rodajas' },
+  });
+  const cruzCut = await prisma.cut.findUnique({
+    where: { name: 'Cruz' },
+  });
+  const sacadaCut = await prisma.cut.findUnique({
+    where: { name: 'Sacada' },
+  });
+
+  const patasYTripas = await prisma.product.findMany({
+    where: {
+      name: { in: ['Pata morena', 'Pata blanca', 'Tripa', 'Tripa de rastro'] },
     },
   });
 
-  // 4️⃣ Create 5 creative products
-  const products = await Promise.all([
-    // Product 1: Premium Beef Rib
-    prisma.product.create({
+  for (const p of patasYTripas) {
+    const base = Number(p.pricePerKg != null ? Number(p.pricePerKg) : 0);
+    const cutsToCreate = p.name.includes('Pata')
+      ? [
+          { cutId: rodajasCut!.id, pricePerKg: base + 2 },
+          { cutId: cruzCut!.id, pricePerKg: base + 2 },
+        ]
+      : [{ cutId: sacadaCut!.id, pricePerKg: base + 3 }];
+
+    await prisma.product.update({
+      where: { id: p.id },
       data: {
-        name: 'Costilla de Res Premium',
-        description: 'Costilla de res de primera calidad, perfecta para asar',
-        barcode: '1234567890001',
-        pricePerKg: 280.0,
-        categories: {
-          create: [
-            { category: { connect: { name: 'Carnes Premium' } } },
-            { category: { connect: { name: 'Viscera Roja' } } },
-          ],
-        },
+        categories: visceraBlanca
+          ? { create: [{ category: { connect: { name: 'Viscera Blanca' } } }] }
+          : undefined,
+        cuts: { create: cutsToCreate },
+      },
+    });
+  }
+
+  // Link the rest of Viscera Blanca products to category (without cuts)
+  const vbRest = await prisma.product.findMany({
+    where: { name: { in: ['Panza', 'Libro', 'Quajo', 'Teleco'] } },
+  });
+  for (const p of vbRest) {
+    await prisma.product.update({
+      where: { id: p.id },
+      data: {
+        categories: visceraBlanca
+          ? { create: [{ category: { connect: { name: 'Viscera Blanca' } } }] }
+          : undefined,
+      },
+    });
+  }
+
+  // 5️⃣ Create products for Viscera Roja
+  await prisma.product.createMany({
+    data: [
+      {
+        name: 'Cabeza',
+        description: 'Cabeza de res',
+        pricePerKg: 58,
+      },
+      {
+        name: 'Cabeza de rastro',
+        description: 'Cabeza de rastro',
+        pricePerKg: 56,
+      },
+      {
+        name: 'Cabeza sin lengua',
+        description: 'Cabeza sin lengua',
+        pricePerKg: 55,
+      },
+      {
+        name: 'Higado',
+        description: 'Hígado',
+        pricePerKg: 48,
+      },
+      {
+        name: 'Corazon',
+        description: 'Corazón',
+        pricePerKg: 52,
+      },
+      {
+        name: 'Lengua',
+        description: 'Lengua',
+        pricePerKg: 90,
+      },
+      {
+        name: 'Bofe',
+        description: 'Bofe',
+        pricePerKg: 35,
+      },
+      {
+        name: 'Teleco',
+        description: 'Teleco (roja)',
+        pricePerKg: 46,
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  const sinTapaCut = await prisma.cut.findUnique({
+    where: { name: 'Sin Tapa' },
+  });
+
+  const cabezas = await prisma.product.findMany({
+    where: {
+      name: { in: ['Cabeza', 'Cabeza de rastro', 'Cabeza sin lengua'] },
+    },
+  });
+
+  for (const p of cabezas) {
+    await prisma.product.update({
+      where: { id: p.id },
+      data: {
+        categories: visceraRoja
+          ? { create: [{ category: { connect: { name: 'Viscera Roja' } } }] }
+          : undefined,
         cuts: {
           create: [
-            { cut: { connect: { name: 'Entera' } }, pricePerKg: 280.0 },
-            { cut: { connect: { name: 'Rodajas' } }, pricePerKg: 300.0 },
+            {
+              cutId: cuatroCut!.id,
+              pricePerKg:
+                (p.pricePerKg != null ? Number(p.pricePerKg) : 56) + 2,
+            },
+            {
+              cutId: sinTapaCut!.id,
+              pricePerKg:
+                (p.pricePerKg != null ? Number(p.pricePerKg) : 56) + 3,
+            },
           ],
         },
       },
-    }),
+    });
+  }
 
-    // Product 2: Chicken Breast
-    prisma.product.create({
+  // Link the rest of Viscera Roja products to category (without cuts)
+  const vrRest = await prisma.product.findMany({
+    where: { name: { in: ['Higado', 'Corazon', 'Lengua', 'Bofe', 'Teleco'] } },
+  });
+  for (const p of vrRest) {
+    await prisma.product.update({
+      where: { id: p.id },
       data: {
-        name: 'Pechuga de Pollo Orgánica',
-        description: 'Pechuga de pollo orgánico, libre de hormonas',
-        barcode: '1234567890002',
-        pricePerKg: 120.0,
-        categories: {
-          create: [{ category: { connect: { name: 'Carnes Regulares' } } }],
-        },
-        cuts: {
-          create: [
-            { cut: { connect: { name: 'Filete' } }, pricePerKg: 140.0 },
-            { cut: { connect: { name: 'Cubos' } }, pricePerKg: 130.0 },
-          ],
-        },
+        categories: visceraRoja
+          ? { create: [{ category: { connect: { name: 'Viscera Roja' } } }] }
+          : undefined,
       },
-    }),
+    });
+  }
 
-    // Product 3: Pork Chops
-    prisma.product.create({
-      data: {
-        name: 'Chuletas de Cerdo',
-        description: 'Chuletas de cerdo frescas, ideales para la parrilla',
-        barcode: '1234567890003',
-        pricePerKg: 95.0,
-        categories: {
-          create: [{ category: { connect: { name: 'Carnes Regulares' } } }],
-        },
-        cuts: {
-          create: [
-            { cut: { connect: { name: 'Entera' } }, pricePerKg: 95.0 },
-            { cut: { connect: { name: 'En Cuatro' } }, pricePerKg: 100.0 },
-          ],
-        },
-      },
-    }),
-
-    // Product 4: Beef Liver
-    prisma.product.create({
-      data: {
-        name: 'Hígado de Res',
-        description: 'Hígado de res fresco, rico en hierro',
-        barcode: '1234567890004',
-        pricePerKg: 45.0,
-        categories: {
-          create: [
-            { category: { connect: { name: 'Viscera Roja' } } },
-            { category: { connect: { name: 'Cajas de Menudo' } } },
-          ],
-        },
-        cuts: {
-          create: [
-            { cut: { connect: { name: 'Rodajas' } }, pricePerKg: 50.0 },
-            { cut: { connect: { name: 'Cubos' } }, pricePerKg: 48.0 },
-          ],
-        },
-      },
-    }),
-
-    // Product 5: Plastic Bags
-    prisma.product.create({
-      data: {
-        name: 'Bolsas Plásticas Medianas',
-        description: 'Bolsas plásticas medianas para empaque de carnes',
-        barcode: '1234567890005',
-        pricePerUnit: 0.5,
-        categories: {
-          create: [{ category: { connect: { name: 'Bolsas' } } }],
-        },
-      },
-    }),
-  ]);
-
-  // 5️⃣ Create 5 realistic tickets
-  const tickets = await Promise.all([
-    // Ticket 1: Large order with premium beef
-    prisma.ticket.create({
-      data: {
-        date: new Date('2024-01-15T10:30:00Z'),
-        total: 1250.0,
-        paymentType: 'Efectivo',
-        userId: user1.id,
-        printed: true,
-        items: {
-          create: [
-            {
-              productId: products[0].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Entera' },
-              }))!.id,
-              quantity: 2.5,
-              unitPrice: 280.0,
-              subtotal: 700.0,
-            },
-            {
-              productId: products[1].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Filete' },
-              }))!.id,
-              quantity: 1.0,
-              unitPrice: 140.0,
-              subtotal: 140.0,
-            },
-            {
-              productId: products[4].id,
-              quantity: 20,
-              unitPrice: 0.5,
-              subtotal: 10.0,
-            },
-          ],
-        },
-      },
-    }),
-
-    // Ticket 2: Regular family order
-    prisma.ticket.create({
-      data: {
-        date: new Date('2024-01-15T14:20:00Z'),
-        total: 380.0,
-        paymentType: 'Tarjeta',
-        userId: user2.id,
-        printed: true,
-        items: {
-          create: [
-            {
-              productId: products[2].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Entera' },
-              }))!.id,
-              quantity: 2.0,
-              unitPrice: 95.0,
-              subtotal: 190.0,
-            },
-            {
-              productId: products[1].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Cubos' },
-              }))!.id,
-              quantity: 1.5,
-              unitPrice: 130.0,
-              subtotal: 195.0,
-            },
-          ],
-        },
-      },
-    }),
-
-    // Ticket 3: Organ meats order
-    prisma.ticket.create({
-      data: {
-        date: new Date('2024-01-16T09:15:00Z'),
-        total: 150.0,
-        paymentType: 'Efectivo',
-        userId: user1.id,
-        printed: false,
-        items: {
-          create: [
-            {
-              productId: products[3].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Rodajas' },
-              }))!.id,
-              quantity: 2.0,
-              unitPrice: 50.0,
-              subtotal: 100.0,
-            },
-            {
-              productId: products[4].id,
-              quantity: 100,
-              unitPrice: 0.5,
-              subtotal: 50.0,
-            },
-          ],
-        },
-      },
-    }),
-
-    // Ticket 4: Small order
-    prisma.ticket.create({
-      data: {
-        date: new Date('2024-01-16T16:45:00Z'),
-        total: 95.0,
-        paymentType: 'Efectivo',
-        userId: user2.id,
-        printed: true,
-        items: {
-          create: [
-            {
-              productId: products[2].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'En Cuatro' },
-              }))!.id,
-              quantity: 1.0,
-              unitPrice: 100.0,
-              subtotal: 100.0,
-            },
-          ],
-        },
-      },
-    }),
-
-    // Ticket 5: Mixed order
-    prisma.ticket.create({
-      data: {
-        date: new Date('2024-01-17T11:30:00Z'),
-        total: 420.0,
-        paymentType: 'Tarjeta',
-        userId: user1.id,
-        printed: true,
-        items: {
-          create: [
-            {
-              productId: products[0].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Rodajas' },
-              }))!.id,
-              quantity: 1.0,
-              unitPrice: 300.0,
-              subtotal: 300.0,
-            },
-            {
-              productId: products[3].id,
-              cutId: (await prisma.cut.findUnique({
-                where: { name: 'Cubos' },
-              }))!.id,
-              quantity: 2.5,
-              unitPrice: 48.0,
-              subtotal: 120.0,
-            },
-          ],
-        },
-      },
-    }),
-  ]);
-
-  console.log('✅ Seed completed successfully');
   console.log(
-    `Created ${products.length} products and ${tickets.length} tickets`,
+    '✅ Seed completed successfully (categorías, productos y cortes especificados)',
   );
 }
 
