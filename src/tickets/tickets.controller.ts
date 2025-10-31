@@ -28,6 +28,9 @@ export class TicketsController {
     const pageNum = query.page ? parseInt(query.page, 10) : 1;
     const limitNum = query.limit ? parseInt(query.limit, 10) : 10;
     const userId = query.userId ? parseInt(query.userId, 10) : undefined;
+    const productIds = query.productIds
+      ? query.productIds.split(',').map((id) => parseInt(id, 10))
+      : undefined;
 
     return this.ticketsService.findAll(
       pageNum,
@@ -38,6 +41,7 @@ export class TicketsController {
       query.endDate,
       query.sortBy,
       query.order,
+      productIds,
     );
   }
 

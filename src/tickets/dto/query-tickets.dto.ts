@@ -10,6 +10,7 @@ export const queryTicketsSchema = z.object({
   endDate: z.string().optional(),
   sortBy: z.enum(['date', 'createdAt', 'updatedAt', 'total']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
+  productIds: z.string().optional(),
 });
 
 export class QueryTicketsDto extends createZodDto(queryTicketsSchema) {}

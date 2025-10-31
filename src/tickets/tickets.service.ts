@@ -38,6 +38,7 @@ export class TicketsService {
     endDate?: string,
     sortBy?: 'date' | 'createdAt' | 'updatedAt' | 'total',
     order?: 'asc' | 'desc',
+    productIds?: number[],
   ): Promise<{
     data: TicketWithRelations[];
     pagination: {
@@ -66,6 +67,16 @@ export class TicketsService {
           },
         },
       ];
+    }
+
+    if (productIds && productIds.length > 0) {
+      whereClause.items = {
+        some: {
+          productId: {
+            in: productIds,
+          },
+        },
+      };
     }
 
     if (userId !== undefined) {
