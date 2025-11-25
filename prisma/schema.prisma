@@ -64,10 +64,12 @@ model Ticket {
   total       Decimal      @db.Decimal(10, 2)
   paymentType String
   userId      Int?
+  clientId    Int?
   printed     Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt @default(now())
   user        User?        @relation(fields: [userId], references: [id])
+  client      Client?      @relation(fields: [clientId], references: [id])
   items       TicketItem[]
 }
 
@@ -93,3 +95,12 @@ model User {
   isActive Boolean  @default(true)
   tickets  Ticket[]
 }
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tickets   Ticket[]
+}
+

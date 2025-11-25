@@ -12,6 +12,7 @@ const ticketInclude = {
     },
   },
   user: true,
+  client: true,
 } as const;
 
 type TicketWithRelations = Prisma.TicketGetPayload<{
@@ -190,6 +191,12 @@ export class TicketsService {
     if (dto.userId !== undefined) {
       data.user = {
         connect: { id: dto.userId },
+      };
+    }
+
+    if (dto.clientId !== undefined) {
+      data.client = {
+        connect: { id: dto.clientId },
       };
     }
 

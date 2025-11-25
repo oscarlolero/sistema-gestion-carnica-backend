@@ -4,9 +4,17 @@ import { TicketsModule } from './tickets/tickets.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
-  imports: [ProductsModule, TicketsModule, CloudinaryModule, HealthModule, UsersModule],
+  imports: [
+    ProductsModule,
+    TicketsModule,
+    CloudinaryModule,
+    HealthModule,
+    UsersModule,
+    ClientsModule,
+  ],
   controllers: [],
   providers: [],
 })

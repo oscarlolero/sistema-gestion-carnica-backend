@@ -20,6 +20,7 @@ export const createTicketSchema = z
     total: decimalSchema,
     paymentType: z.string().min(1).max(100),
     userId: z.number().int().positive().optional(),
+    clientId: z.number().int().positive().optional(),
     printed: z.boolean().optional(),
     items: z.array(ticketItemSchema).min(1),
   })
