@@ -104,3 +104,8 @@ model Client {
   tickets   Ticket[]
 }
 
+model SystemSetting {
+  key         String  @id
+  value       String
+  description String?
+}
