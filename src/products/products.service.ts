@@ -206,29 +206,54 @@ export class ProductsService {
   ): Promise<Product> {
     await this.ensureExists(id);
 
-    return this.prisma.product.update({
-      where: { id },
-      data: {
-        ...this.mapUpdateData(updateProductDto),
-        categories: updateProductDto.categories
-          ? {
-              deleteMany: {},
-              create: updateProductDto.categories.map((cat) => ({
-                categoryId: cat.categoryId,
-              })),
-            }
-          : undefined,
-        cuts: updateProductDto.cuts
-          ? {
-              deleteMany: {},
-              create: updateProductDto.cuts.map((cut) => ({
-                cutId: cut.cutId,
-                pricePerKg: this.mapDecimalInput(cut.pricePerKg),
-                pricePerUnit: this.mapDecimalInput(cut.pricePerUnit),
-              })),
-            }
-          : undefined,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const data = this.mapUpdateData(updateProductDto);
+
+      const product = await tx.product.update({
+        where: { id },
+        data,
+      });
+
+      if (updateProductDto.categories) {
+        await tx.productCategory.deleteMany({
+          where: { productId: id },
+        });
+
+        if (updateProductDto.categories.length > 0) {
+          await tx.productCategory.createMany({
+            data: updateProductDto.categories.map((cat) => ({
+              productId: id,
+              categoryId: cat.categoryId,
+            })),
+          });
+        }
+      }
+
+      if (updateProductDto.cuts) {
+        await tx.productCut.deleteMany({
+          where: { productId: id },
+        });
+
+        if (updateProductDto.cuts.length > 0) {
+          const cutsData = updateProductDto.cuts.map((cut) => {
+            const pricePerKg = this.mapDecimalInput(cut.pricePerKg);
+            const pricePerUnit = this.mapDecimalInput(cut.pricePerUnit);
+
+            return {
+              productId: id,
+              cutId: cut.cutId,
+              pricePerKg: pricePerKg === undefined ? null : pricePerKg,
+              pricePerUnit: pricePerUnit === undefined ? null : pricePerUnit,
+            };
+          });
+
+          await tx.productCut.createMany({
+            data: cutsData,
+          });
+        }
+      }
+
+      return product;
     });
   }
 
